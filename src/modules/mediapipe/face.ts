@@ -1,9 +1,4 @@
-import BrowserEnv from '../../libs/browserEnv';
-const benv = new BrowserEnv();
-benv.init();
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
-import '@mediapipe/face_mesh';
-
 import { PixelInput, Solution } from './index';
 
 class Face implements Solution<faceLandmarksDetection.Face, faceLandmarksDetection.FaceLandmarksDetector> {

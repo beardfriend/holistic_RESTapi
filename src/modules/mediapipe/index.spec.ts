@@ -1,4 +1,4 @@
-import Face from './face';
+import { Face, Pose } from './index';
 
 import '@tensorflow/tfjs-core';
 import * as tfnode from '@tensorflow/tfjs-node';
@@ -23,6 +23,25 @@ describe('run mediapipe', () => {
 
             // 검증
             expect(faceResult[0].keypoints.length).toBeGreaterThan(1);
+        } catch (error) {
+            expect(error).toBeNull();
+        }
+    });
+
+    it('pose_module', async () => {
+        try {
+            // set tensor
+            tfnode.setBackend('tensorflow');
+            const file = fs.readFileSync('./ss.jpeg');
+            const tensor = (await tfnode.node.decodeImage(file)) as tfnode.Tensor3D;
+
+            // faceModule
+            tfnode.setBackend('cpu');
+            const postMD = new Pose();
+            await postMD.init();
+            const postResult = await postMD.get(tensor as tfnode.Tensor3D);
+            // 검증
+            expect(postResult[0].keypoints.length).toBeGreaterThan(1);
         } catch (error) {
             expect(error).toBeNull();
         }
