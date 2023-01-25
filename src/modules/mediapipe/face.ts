@@ -1,5 +1,5 @@
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
-import { PixelInput, Solution } from './index';
+import { PixelInput, Result, Solution } from './index';
 
 class Face implements Solution<faceLandmarksDetection.Face, faceLandmarksDetection.FaceLandmarksDetector> {
     module: faceLandmarksDetection.FaceLandmarksDetector;
@@ -15,8 +15,17 @@ class Face implements Solution<faceLandmarksDetection.Face, faceLandmarksDetecti
                 return err;
             });
     }
-    async get(input: PixelInput): Promise<faceLandmarksDetection.Face[]> {
-        return await this.module.estimateFaces(input, { flipHorizontal: false });
+    async get(input: PixelInput): Promise<Result<faceLandmarksDetection.Face>> {
+        const result: Result<faceLandmarksDetection.Face> = {
+            data: [],
+            modelName: 'face',
+        };
+
+        result.data = await this.module.estimateFaces(input, { flipHorizontal: false });
+
+        this.module.reset();
+
+        return result;
     }
 }
 
