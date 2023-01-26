@@ -1,9 +1,9 @@
-import { Pose, Face, Hands } from '../modules/mediapipe/index';
+import { Pose, Face, Hands, Result } from '../modules/mediapipe/index';
 import IHolistic from '../transport/response';
 
-import '@tensorflow/tfjs-core';
 import * as tfnode from '@tensorflow/tfjs-node';
-import '@tensorflow/tfjs-backend-webgl';
+
+import '@tensorflow/tfjs-backend-wasm';
 import '@mediapipe/face_mesh';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
@@ -23,33 +23,90 @@ class MediaPipeService {
         });
     }
 
-    async getHolistic(file: Buffer): Promise<IHolistic> {
+    async getHolistics(bufferMap: Map<number, Buffer>): Promise<IHolistic[]> {
         try {
-            // declare empty result
-            const response: IHolistic = {
+            const tensorMap = await this.bufferToTensor3D(bufferMap);
+
+            // get holistic
+            const holistics = await this.getHolisticData(tensorMap);
+
+            return this.dataProcessing(holistics);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            throw new Error(err);
+        }
+    }
+
+    private async bufferToTensor3D(bufferMap: Map<number, Buffer>): Promise<Map<number, tfnode.Tensor3D>> {
+        const result = new Map<number, tfnode.Tensor3D>();
+
+        await tfnode.setBackend('tensorflow');
+
+        await Promise.all(
+            Array.from(bufferMap).map(async ([key, buf]) => {
+                const tensor = (await tfnode.node.decodeImage(buf)) as tfnode.Tensor3D;
+                await result.set(key, tensor);
+            })
+        );
+
+        return result;
+    }
+
+    private async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
+        const result = new Map<
+            number,
+            (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
+        >();
+
+        await tfnode.setBackend('wasm');
+
+        // TODO : 메모리 누수 잡기
+        for (const [key, tensor] of tensorMap) {
+            let dataArr = [];
+            for (const md of this.modules) {
+                const data = await md.get(tensor);
+                dataArr.push(data);
+            }
+
+            await result.set(key, dataArr);
+            dataArr = [];
+        }
+
+        // await Promise.all(
+        //     Array.from(tensorMap).map(async ([key, tensor]) => {
+        //         const data = await Promise.all(this.modules.map(async (d) => await d.get(tensor)));
+        //         await result.set(key, data);
+        //     })
+        // );
+
+        return result;
+    }
+
+    private dataProcessing(
+        dataMap: Map<
+            number,
+            (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
+        >
+    ): IHolistic[] {
+        const response: IHolistic[] = [];
+
+        let i = 0;
+        dataMap.forEach((result, key) => {
+            response.push({
+                index: key,
                 faceLandmarks: [],
                 leftHandLandmarks: [],
                 poseLandmarks: [],
                 rightHandLandmark: [],
-            };
+            });
 
-            // TODO : video processing
-
-            // image or video file to tensor3D
-            tfnode.setBackend('tensorflow');
-            const tensor = (await tfnode.node.decodeImage(file)) as tfnode.Tensor3D;
-
-            // get holistic
-            tfnode.setBackend('cpu');
-            const holisticResult = await Promise.all(this.modules.map(async (d) => await d.get(tensor)));
-
-            // data processing
-            holisticResult.forEach((d) => {
+            result.forEach((d) => {
                 if (d.modelName === 'pose') {
                     const data = d.data as poseDetection.Pose[];
 
                     data[0]?.keypoints?.forEach((d) => {
-                        response.poseLandmarks.push({
+                        response[i].poseLandmarks.push({
                             x: d.x,
                             y: d.y,
                             z: d.z ? d.z : null,
@@ -62,7 +119,7 @@ class MediaPipeService {
                     const data = d.data as faceLandmarksDetection.Face[];
 
                     data[0]?.keypoints?.forEach((d) => {
-                        response.faceLandmarks.push({
+                        response[i].faceLandmarks.push({
                             x: d.x,
                             y: d.y,
                             z: d.z ? d.z : null,
@@ -77,7 +134,7 @@ class MediaPipeService {
                     data?.forEach((hands) => {
                         if (hands.handedness === 'Right') {
                             hands?.keypoints?.forEach((d) => {
-                                response.leftHandLandmarks.push({
+                                response[i].leftHandLandmarks.push({
                                     x: d.x,
                                     y: d.y,
                                     z: d.z ? d.z : null,
@@ -86,7 +143,7 @@ class MediaPipeService {
                             });
                         } else if (hands.handedness === 'Left') {
                             hands?.keypoints?.forEach((d) => {
-                                response.rightHandLandmark.push({
+                                response[i].rightHandLandmark.push({
                                     x: d.x,
                                     y: d.y,
                                     z: d.z ? d.z : null,
@@ -97,12 +154,14 @@ class MediaPipeService {
                     });
                 }
             });
+            i++;
+        });
 
-            return response;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (err: any) {
-            throw new Error(err);
-        }
+        return response.sort((a: IHolistic, b: IHolistic): any => {
+            if (a.index > b.index) return 1;
+            if (a.index === b.index) return 0;
+            if (a.index < b.index) return -1;
+        });
     }
 }
 

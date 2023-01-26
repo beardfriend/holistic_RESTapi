@@ -6,6 +6,8 @@
         "strict": true,
         "baseUrl": ".",
         "outDir": "dist",
+        "sourceMap": true,
+
         "noImplicitAny": true, // any타입 허용 안함
         "strictNullChecks": true, // null 체크 까다롭게
         "strictFunctionTypes": true, // 함수 타입 까다롭게 체크
@@ -18,6 +20,6 @@
         "strictPropertyInitialization": false,
         "esModuleInterop": true // commonjs를 사용하기 위해 꼭 필요함.
     },
-    "exclude": ["node_modules/"],
+    "exclude": ["node_modules/", "src/**/*.spec.ts"],
     "include": ["src/**/*", "src/*"]
 }

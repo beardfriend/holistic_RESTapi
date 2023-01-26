@@ -23,8 +23,6 @@ class Face implements Solution<faceLandmarksDetection.Face, faceLandmarksDetecti
 
         result.data = await this.module.estimateFaces(input, { flipHorizontal: false });
 
-        this.module.reset();
-
         return result;
     }
 }
