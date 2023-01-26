@@ -4,7 +4,9 @@ import multer from 'multer';
 import BrowserEnv from './modules/browser/browserEnv';
 import MediaPipeService from './services/mediapipe';
 import { PassThrough } from 'stream';
-import fs from 'fs';
+import streamifier from 'streamifier';
+
+// import fs from 'fs';
 
 function main(): void {
     const app = express();
@@ -23,7 +25,8 @@ function main(): void {
         }
 
         // setStream
-        const readStream = fs.createReadStream('./test/freevideo.mp4');
+
+        const readStream = streamifier.createReadStream(req.file.buffer);
 
         const passStream = new PassThrough();
         const option = ['-i', '-', '-r', '24', '-f', 'image2pipe', '-'];
