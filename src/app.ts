@@ -1,10 +1,9 @@
 import cp from 'child_process';
 import express, { Request, Response } from 'express';
 import multer from 'multer';
+import streamifier from 'streamifier';
 import BrowserEnv from './modules/browser/browserEnv';
 import MediaPipeService from './services/mediapipe';
-import { PassThrough } from 'stream';
-import streamifier from 'streamifier';
 
 // import fs from 'fs';
 
@@ -28,16 +27,10 @@ function main(): void {
 
         const readStream = streamifier.createReadStream(req.file.buffer);
 
-        const passStream = new PassThrough();
         const option = ['-i', '-', '-r', '24', '-f', 'image2pipe', '-'];
         const cmmand = cp.spawn('ffmpeg', option);
-        readStream.pipe(passStream).pipe(cmmand.stdin);
 
-        // cmmand.stdout.on('data', (chunk: Buffer) => {
-        //     if (chunk.length > 3 && chunk[0] === 255 && chunk[1] === 216 && chunk[2] === 255) {
-
-        //     }
-        // });
+        readStream.pipe(cmmand.stdin);
 
         let count = 1;
 
@@ -59,8 +52,6 @@ function main(): void {
             }
         });
 
-        // const tensorObject: { [key: number]: tfnode.Tensor3D } = {};
-        // const response: IHolistic[] = [];
         cmmand.stdout.on('end', async () => {
             const res = await mpSvc.getHolistic(BufferMap[1]);
             console.log(res);
