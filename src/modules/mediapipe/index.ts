@@ -4,9 +4,8 @@ benv.init();
 import '@mediapipe/face_mesh';
 import '@mediapipe/hands';
 import '@tensorflow/tfjs-node';
-// import '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
-import { Tensor3D } from '@tensorflow/tfjs-core';
+import { Tensor3D } from '@tensorflow/tfjs-node';
 
 export interface Solution<T, F> {
     module: F;

@@ -23,8 +23,6 @@ class Hands implements Solution<handsPoseDetection.Hand, handsPoseDetection.Hand
         };
         result.data = await this.module.estimateHands(input, { flipHorizontal: false });
 
-        this.module.reset();
-
         return result;
     }
 }

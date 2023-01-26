@@ -1,6 +1,5 @@
 import { Face, Pose, Hands } from './index';
 
-import '@tensorflow/tfjs-core';
 import * as tfnode from '@tensorflow/tfjs-node';
 import '@tensorflow/tfjs-backend-webgl';
 import '@mediapipe/face_mesh';

@@ -17,8 +17,6 @@ class Pose implements Solution<poseDetection.Pose, poseDetection.PoseDetector> {
 
         result.data = await this.module.estimatePoses(input, { flipHorizontal: false });
 
-        this.module.reset();
-
         return result;
     }
 }

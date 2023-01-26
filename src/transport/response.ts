@@ -1,4 +1,5 @@
 export default interface IHolistic {
+    index: number;
     faceLandmarks: IVector[];
     leftHandLandmarks: IVector[];
     poseLandmarks: IVector[];
