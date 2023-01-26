@@ -8,6 +8,6 @@ export default interface IHolistic {
 interface IVector {
     x: number;
     y: number;
-    z?: number;
-    visibility?: number;
+    z: number | null;
+    visibility: number | null;
 }
