@@ -25,6 +25,9 @@ class Face implements Solution<faceLandmarksDetection.Face, faceLandmarksDetecti
 
         return result;
     }
+    reset() {
+        this.module.reset();
+    }
 }
 
 export default Face;

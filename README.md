@@ -26,12 +26,12 @@
 
 ### ffmpeg
 
--   [ ] 모듈화
+-   [x] 모듈화
 
 ## HTTP handler
 
 -   [ ] 정규식 video,image 이외 예외처리
--   [ ] video, image 합치기
+-   [x] video, image 합치기
 -   [ ] video 예외처리
 -   [ ] swagger
 

@@ -18,10 +18,10 @@ class FfmpegStream {
         this.inputPipe.pipe(this.mainHouse.stdin);
     }
 
-    Output(callback: (chunk: Buffer) => void): Promise<boolean> {
+    Output(callback: (chunk: Buffer) => Promise<void>): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            this.mainHouse.stdout.on('data', (data: Buffer) => {
-                callback(data);
+            this.mainHouse.stdout.on('data', async (data: Buffer) => {
+                await callback(data);
             });
 
             this.mainHouse.stdout.on('end', () => {
@@ -29,6 +29,7 @@ class FfmpegStream {
             });
 
             this.mainHouse.stdout.on('error', (err) => {
+                console.log(err);
                 reject(err);
             });
         });

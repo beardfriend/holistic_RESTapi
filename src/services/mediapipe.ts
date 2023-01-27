@@ -3,8 +3,8 @@ import IHolistic from '../transport/response';
 
 import * as tfnode from '@tensorflow/tfjs-node';
 
-import '@tensorflow/tfjs-backend-wasm';
 import '@mediapipe/face_mesh';
+import '@tensorflow/tfjs-backend-wasm';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
@@ -54,33 +54,33 @@ class MediaPipeService {
     }
 
     private async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
-        const result = new Map<
-            number,
-            (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
-        >();
+        try {
+            const result = new Map<
+                number,
+                (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
+            >();
 
-        await tfnode.setBackend('wasm');
+            await tfnode.setBackend('wasm');
 
-        // TODO : 메모리 누수 잡기
-        for (const [key, tensor] of tensorMap) {
-            let dataArr = [];
-            for (const md of this.modules) {
-                const data = await md.get(tensor);
-                dataArr.push(data);
+            for (const [key, tensor] of tensorMap) {
+                let dataArr = [];
+                for (const md of this.modules) {
+                    const data = await md.get(tensor);
+                    dataArr.push(data);
+                }
+                await result.set(key, dataArr);
+                console.log(key);
+                dataArr = [];
             }
 
-            await result.set(key, dataArr);
-            dataArr = [];
+            this.modules.forEach((d) => {
+                d.reset();
+            });
+
+            return result;
+        } catch (err: any) {
+            return err;
         }
-
-        // await Promise.all(
-        //     Array.from(tensorMap).map(async ([key, tensor]) => {
-        //         const data = await Promise.all(this.modules.map(async (d) => await d.get(tensor)));
-        //         await result.set(key, data);
-        //     })
-        // );
-
-        return result;
     }
 
     private dataProcessing(
@@ -92,7 +92,7 @@ class MediaPipeService {
         const response: IHolistic[] = [];
 
         let i = 0;
-        dataMap.forEach((result, key) => {
+        dataMap?.forEach((result, key) => {
             response.push({
                 index: key,
                 faceLandmarks: [],
@@ -101,7 +101,7 @@ class MediaPipeService {
                 rightHandLandmark: [],
             });
 
-            result.forEach((d) => {
+            result?.forEach((d) => {
                 if (d.modelName === 'pose') {
                     const data = d.data as poseDetection.Pose[];
 
@@ -109,8 +109,8 @@ class MediaPipeService {
                         response[i].poseLandmarks.push({
                             x: d.x,
                             y: d.y,
-                            z: d.z ? d.z : null,
-                            visibility: d.score ? d.score : null,
+                            z: d.z ? d.z : undefined,
+                            visibility: d.score ? d.score : undefined,
                         });
                     });
                 }
@@ -122,8 +122,8 @@ class MediaPipeService {
                         response[i].faceLandmarks.push({
                             x: d.x,
                             y: d.y,
-                            z: d.z ? d.z : null,
-                            visibility: d.score ? d.score : null,
+                            z: d.z ? d.z : undefined,
+                            visibility: d.score ? d.score : undefined,
                         });
                     });
                 }
@@ -137,8 +137,8 @@ class MediaPipeService {
                                 response[i].leftHandLandmarks.push({
                                     x: d.x,
                                     y: d.y,
-                                    z: d.z ? d.z : null,
-                                    visibility: d.score ? d.score : null,
+                                    z: d.z ? d.z : undefined,
+                                    visibility: d.score ? d.score : undefined,
                                 });
                             });
                         } else if (hands.handedness === 'Left') {
@@ -146,8 +146,8 @@ class MediaPipeService {
                                 response[i].rightHandLandmark.push({
                                     x: d.x,
                                     y: d.y,
-                                    z: d.z ? d.z : null,
-                                    visibility: d.score ? d.score : null,
+                                    z: d.z ? d.z : undefined,
+                                    visibility: d.score ? d.score : undefined,
                                 });
                             });
                         }
@@ -157,7 +157,7 @@ class MediaPipeService {
             i++;
         });
 
-        return response.sort((a: IHolistic, b: IHolistic): any => {
+        return response?.sort((a: IHolistic, b: IHolistic): any => {
             if (a.index > b.index) return 1;
             if (a.index === b.index) return 0;
             if (a.index < b.index) return -1;

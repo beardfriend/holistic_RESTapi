@@ -25,6 +25,10 @@ class Hands implements Solution<handsPoseDetection.Hand, handsPoseDetection.Hand
 
         return result;
     }
+
+    reset() {
+        this.module.reset();
+    }
 }
 
 export default Hands;

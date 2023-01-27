@@ -19,6 +19,9 @@ class Pose implements Solution<poseDetection.Pose, poseDetection.PoseDetector> {
 
         return result;
     }
+    reset() {
+        this.module.reset();
+    }
 }
 
 export default Pose;

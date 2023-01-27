@@ -6,9 +6,9 @@ export default interface IHolistic {
     rightHandLandmark: IVector[];
 }
 
-interface IVector {
+export interface IVector {
     x: number;
     y: number;
-    z: number | null;
-    visibility: number | null;
+    z?: number | undefined;
+    visibility?: number | undefined;
 }
