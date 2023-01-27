@@ -20,6 +20,6 @@
         "strictPropertyInitialization": false,
         "esModuleInterop": true // commonjs를 사용하기 위해 꼭 필요함.
     },
-    "exclude": ["node_modules/", "src/**/*.spec.ts"],
+    "exclude": ["node_modules/"],
     "include": ["src/**/*", "src/*"]
 }
