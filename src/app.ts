@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
-import { MDPIPE_SERVER_PORT_LIST } from './constants/constant';
+import { fileTypeRegex, MDPIPE_SERVER_PORT_LIST } from './constants/constant';
 import BrowserEnv from './modules/browser/browserEnv';
 import FfmpegStream from './modules/ffmpeg/ffmpegStream';
 import grpcHolistic from './modules/grpc/holistic';
@@ -37,6 +37,10 @@ function main(): void {
 
         if (file.size > 2000000) {
             return res.status(400).send({ message: '파일 용량이 너무 큽니다.', result: [] });
+        }
+
+        if (!fileTypeRegex.test(file.mimetype)) {
+            return res.status(400).send({ message: '파일 타입을 확인해주세요.', result: [] });
         }
 
         const isVideo = file.mimetype.includes('video');
