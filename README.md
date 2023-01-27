@@ -9,16 +9,22 @@
 <br/>
 이미지 or 비디오를 입력받아 홀리스틱 모델의 데이터를 제공하는 API
 
+
+
 ## "홀리스틱" 이란 무엇인가요?
 
-라이브 스트리밍 맞춤형 머신러닝 솔루션을 MediaPipe에서 제공합니다.
-Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.
+라이브 스트리밍 맞춤형 머신러닝 솔루션을 MediaPipe에서 제공합니다.  
+Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.  
 인체 움직임, 얼굴에서의 변화, 손 동작을 감지합니다.
 [자세히보기](https://google.github.io/mediapipe/solutions/holistic.html)
+
+
 
 ## 구조
 
 ![diagram](https://user-images.githubusercontent.com/97140962/215166495-79cec676-37ac-4e9e-81f6-4135e1000ec5.jpg)
+
+
 
 ## 구현
 
