@@ -62,7 +62,6 @@ class MediaPipeService {
 
             await tfnode.setBackend('wasm');
 
-            // TODO : 메모리 누수 잡기
             for (const [key, tensor] of tensorMap) {
                 let dataArr = [];
                 for (const md of this.modules) {
@@ -70,21 +69,18 @@ class MediaPipeService {
                     dataArr.push(data);
                 }
                 await result.set(key, dataArr);
-
-                dataArr = [];
                 console.log(key);
+                dataArr = [];
             }
+
+            this.modules.forEach((d) => {
+                d.reset();
+            });
+
             return result;
         } catch (err: any) {
             return err;
         }
-
-        // await Promise.all(
-        //     Array.from(tensorMap).map(async ([key, tensor]) => {
-        //         const data = await Promise.all(this.modules.map(async (d) => await d.get(tensor)));
-        //         await result.set(key, data);
-        //     })
-        // );
     }
 
     private dataProcessing(
@@ -96,7 +92,7 @@ class MediaPipeService {
         const response: IHolistic[] = [];
 
         let i = 0;
-        dataMap.forEach((result, key) => {
+        dataMap?.forEach((result, key) => {
             response.push({
                 index: key,
                 faceLandmarks: [],
@@ -105,7 +101,7 @@ class MediaPipeService {
                 rightHandLandmark: [],
             });
 
-            result.forEach((d) => {
+            result?.forEach((d) => {
                 if (d.modelName === 'pose') {
                     const data = d.data as poseDetection.Pose[];
 
@@ -113,8 +109,8 @@ class MediaPipeService {
                         response[i].poseLandmarks.push({
                             x: d.x,
                             y: d.y,
-                            z: d.z ? d.z : null,
-                            visibility: d.score ? d.score : null,
+                            z: d.z ? d.z : undefined,
+                            visibility: d.score ? d.score : undefined,
                         });
                     });
                 }
@@ -126,8 +122,8 @@ class MediaPipeService {
                         response[i].faceLandmarks.push({
                             x: d.x,
                             y: d.y,
-                            z: d.z ? d.z : null,
-                            visibility: d.score ? d.score : null,
+                            z: d.z ? d.z : undefined,
+                            visibility: d.score ? d.score : undefined,
                         });
                     });
                 }
@@ -141,8 +137,8 @@ class MediaPipeService {
                                 response[i].leftHandLandmarks.push({
                                     x: d.x,
                                     y: d.y,
-                                    z: d.z ? d.z : null,
-                                    visibility: d.score ? d.score : null,
+                                    z: d.z ? d.z : undefined,
+                                    visibility: d.score ? d.score : undefined,
                                 });
                             });
                         } else if (hands.handedness === 'Left') {
@@ -150,8 +146,8 @@ class MediaPipeService {
                                 response[i].rightHandLandmark.push({
                                     x: d.x,
                                     y: d.y,
-                                    z: d.z ? d.z : null,
-                                    visibility: d.score ? d.score : null,
+                                    z: d.z ? d.z : undefined,
+                                    visibility: d.score ? d.score : undefined,
                                 });
                             });
                         }
@@ -161,7 +157,7 @@ class MediaPipeService {
             i++;
         });
 
-        return response.sort((a: IHolistic, b: IHolistic): any => {
+        return response?.sort((a: IHolistic, b: IHolistic): any => {
             if (a.index > b.index) return 1;
             if (a.index === b.index) return 0;
             if (a.index < b.index) return -1;

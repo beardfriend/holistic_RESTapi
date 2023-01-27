@@ -11,6 +11,7 @@ export interface Solution<T, F> {
     module: F;
     init(): void;
     get(input: PixelInput): Promise<Result<T>>;
+    reset(): void;
 }
 
 export interface Result<T> {

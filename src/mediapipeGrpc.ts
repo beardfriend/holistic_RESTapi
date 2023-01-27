@@ -1,28 +1,41 @@
-import { Server, ServerCredentials, sendUnaryData, ServerUnaryCall } from '@grpc/grpc-js';
-import { HolisticServiceService, HolisticRequest, HolisticResponse, Data } from './protos/holistic';
+import { sendUnaryData, Server, ServerCredentials, ServerUnaryCall } from '@grpc/grpc-js';
+import { MDPIPE_SERVER_PORT_LIST } from './constants/constant';
+import { HolisticRequest, HolisticResponse, HolisticServiceService } from './protos/holistic';
+import MediaPipeService from './services/mediapipe';
 
-const server = new Server();
+const ipaddr = 'localhost';
+const portList = MDPIPE_SERVER_PORT_LIST;
 
-server.addService(HolisticServiceService, { getHolistics: getHolistics }); // login 은 이후에 정의할 예정입니다.
-server.bindAsync('localhost:8080', ServerCredentials.createInsecure(), () => {
+if (!process.env.SV_NUM) {
+    throw new Error('0~5를 입력하세요');
+}
+
+const port = portList[Number(process.env.SV_NUM)];
+
+const server = new Server({
+    'grpc.max_send_message_length': 1000000000000,
+    'grpc.max_receive_message_length': 1000000000000,
+});
+const mpSvc = new MediaPipeService();
+
+server.addService(HolisticServiceService, { getHolistics: getHolistics });
+server.bindAsync(`${ipaddr}:${port}`, ServerCredentials.createInsecure(), () => {
+    console.log(`Listening on ${ipaddr}:${port}`);
     server.start();
 });
 
 function getHolistics(call: ServerUnaryCall<HolisticRequest, HolisticResponse>, send: sendUnaryData<HolisticResponse>) {
-    const holire: HolisticResponse = {
-        response: [],
-    };
-    console.log(call.request.request);
-    const res: Data[] = [];
+    const ImagesBufferMap = new Map<number, Buffer>();
 
-    res.push({
-        index: call.request.request[0].index,
-        data: call.request.request[0].data,
+    call.request.request.forEach((d) => {
+        ImagesBufferMap.set(d.index, Buffer.from(d.data, 'base64'));
     });
-    res.push({
-        index: 2,
-        data: 'do',
+
+    const response: HolisticResponse = {
+        result: [],
+    };
+    mpSvc.getHolistics(ImagesBufferMap).then((v) => {
+        response.result = v;
+        send(null, response);
     });
-    holire.response = res;
-    send(null, holire);
 }

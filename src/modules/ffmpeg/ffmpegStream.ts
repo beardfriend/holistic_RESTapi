@@ -29,6 +29,7 @@ class FfmpegStream {
             });
 
             this.mainHouse.stdout.on('error', (err) => {
+                console.log(err);
                 reject(err);
             });
         });

@@ -1,19 +1,34 @@
-syntax = "proto3"; // (1)
+syntax = "proto3"; 
 
 service HolisticService {
 	rpc GetHolistics(HolisticRequest) returns (HolisticResponse);
 }
 
 
-message HolisticRequest { // (2)
+message HolisticRequest { 
 	repeated Data request = 1;
-}
-
-message HolisticResponse {
-	repeated Data response = 1;
 }
 
 message Data {
 	int64 index = 1;
   string data = 2;
+}
+
+message HolisticResponse {
+	repeated HolisticDetail result = 1;
+}
+
+message HolisticDetail {
+	int64 index = 1;
+	repeated Vector faceLandmarks = 2;
+	repeated Vector leftHandLandmarks = 3;
+	repeated Vector poseLandmarks = 4;
+	repeated Vector rightHandLandmark = 5;
+}
+
+message Vector {
+	float x = 1;
+	float y = 2;
+	optional	float z = 3;
+	optional float visibility = 4;
 }
