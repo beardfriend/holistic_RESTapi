@@ -1,0 +1,19 @@
+syntax = "proto3"; // (1)
+
+service HolisticService {
+	rpc GetHolistics(HolisticRequest) returns (HolisticResponse);
+}
+
+
+message HolisticRequest { // (2)
+	repeated Data request = 1;
+}
+
+message HolisticResponse {
+	repeated Data response = 1;
+}
+
+message Data {
+	int64 index = 1;
+  string data = 2;
+}

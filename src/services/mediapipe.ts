@@ -3,8 +3,8 @@ import IHolistic from '../transport/response';
 
 import * as tfnode from '@tensorflow/tfjs-node';
 
-import '@tensorflow/tfjs-backend-wasm';
 import '@mediapipe/face_mesh';
+import '@tensorflow/tfjs-backend-wasm';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
@@ -54,23 +54,29 @@ class MediaPipeService {
     }
 
     private async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
-        const result = new Map<
-            number,
-            (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
-        >();
+        try {
+            const result = new Map<
+                number,
+                (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
+            >();
 
-        await tfnode.setBackend('wasm');
+            await tfnode.setBackend('wasm');
 
-        // TODO : 메모리 누수 잡기
-        for (const [key, tensor] of tensorMap) {
-            let dataArr = [];
-            for (const md of this.modules) {
-                const data = await md.get(tensor);
-                dataArr.push(data);
+            // TODO : 메모리 누수 잡기
+            for (const [key, tensor] of tensorMap) {
+                let dataArr = [];
+                for (const md of this.modules) {
+                    const data = await md.get(tensor);
+                    dataArr.push(data);
+                }
+                await result.set(key, dataArr);
+
+                dataArr = [];
+                console.log(key);
             }
-
-            await result.set(key, dataArr);
-            dataArr = [];
+            return result;
+        } catch (err: any) {
+            return err;
         }
 
         // await Promise.all(
@@ -79,8 +85,6 @@ class MediaPipeService {
         //         await result.set(key, data);
         //     })
         // );
-
-        return result;
     }
 
     private dataProcessing(
