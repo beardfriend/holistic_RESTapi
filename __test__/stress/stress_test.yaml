@@ -8,6 +8,6 @@ config:
 
 scenarios:
     - flow:
-          - post:
+          - get:
                 url: '/mediapipe/holistic'
                 beforeRequest: 'setupMultipartFormData'

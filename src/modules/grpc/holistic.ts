@@ -1,4 +1,5 @@
 import { credentials, ServiceError } from '@grpc/grpc-js';
+
 import { HolisticRequest, HolisticResponse, HolisticServiceClient } from '../../protos/holistic';
 
 export default class grpcHolistic {

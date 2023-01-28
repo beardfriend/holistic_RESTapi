@@ -31,7 +31,7 @@ async function main() {
     gRPCSvc.gRPCHealthCheck();
 
     //handler
-    app.post('/mediapipe/holistic', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
+    app.get('/mediapipe/holistic', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
         try {
             const file = req.file;
 

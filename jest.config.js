@@ -5,7 +5,7 @@ const config = {
         '^.+\\.m?[tj]s?$': ['ts-jest', { useESM: true }],
     },
     testMatch: ['**/*.spec.(ts|tsx)'],
-    testTimeout: 200000000,
+    testTimeout: 2000,
 };
 
 module.exports = config;
