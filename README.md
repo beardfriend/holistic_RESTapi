@@ -48,7 +48,7 @@ API 문서 :
 
 필수 환경
 
-- node.js v18.0
+- node.js ^v18.13.0
 - ffmpeg
 - yarn
 
