@@ -1,0 +1,13 @@
+config:
+    target: 'http://localhost:4000'
+    processor: './processor.js'
+    phases:
+        - duration: 60
+          arrivalRate: 10
+          name: Warm up
+
+scenarios:
+    - flow:
+          - post:
+                url: '/mediapipe/holistic'
+                beforeRequest: 'setupMultipartFormData'
