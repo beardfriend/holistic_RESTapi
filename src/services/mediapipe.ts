@@ -46,7 +46,7 @@ class MediaPipeService {
         await Promise.all(
             Array.from(bufferMap).map(async ([key, buf]) => {
                 const tensor = (await tfnode.node.decodeImage(buf)) as tfnode.Tensor3D;
-                await result.set(key, tensor);
+                result.set(key, tensor);
             })
         );
 
@@ -68,7 +68,7 @@ class MediaPipeService {
                     const data = await md.get(tensor);
                     dataArr.push(data);
                 }
-                await result.set(key, dataArr);
+                result.set(key, dataArr);
                 console.log(key);
                 dataArr = [];
             }

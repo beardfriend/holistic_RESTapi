@@ -6,8 +6,8 @@
     "scripts": {
         "build": "tsc -p ./tsconfig.buid.json",
         "dev": "ts-node-dev src/app.ts",
-        "local:main": "node dist/app.js",
-        "local:holi": "node dist/mediapipeGrpc.js",
+        "local:main": "nodemon dist/app.js",
+        "local:holi": "nodemon dist/mediapipeGrpc.js",
         "prod:main": "pm2-runtime start dist/app.js",
         "prod:holi": "pm2-runtime start dist/mediapipeGrpc.js"
     },
