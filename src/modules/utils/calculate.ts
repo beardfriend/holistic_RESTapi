@@ -23,3 +23,28 @@ export function getNumGroupsEqaulQuantity(total: number, groupCount: number): nu
     }
     return result;
 }
+
+export function getNumGroupsEqaulQuantityByStartNum(startNum: number, lastNum: number, groupCount: number): number[][] {
+    const result = [];
+
+    let min = startNum;
+    const max = lastNum;
+    const range = Math.floor((max - min) / groupCount);
+    for (let i = 1; i <= groupCount; i++) {
+        const start = min;
+        let end = start + range - 1;
+
+        if (i == groupCount) {
+            end = lastNum;
+        }
+
+        let tmp = [];
+        for (let j = start; j <= end; j++) {
+            tmp.push(j);
+        }
+        min = start + range;
+        result.push(tmp);
+        tmp = [];
+    }
+    return result;
+}

@@ -37,8 +37,11 @@ class MediaPipeService {
             throw new Error(err);
         }
     }
+    async setBackend(text: string) {
+        return tfnode.setBackend(text);
+    }
 
-    private async bufferToTensor3D(bufferMap: Map<number, Buffer>): Promise<Map<number, tfnode.Tensor3D>> {
+    async bufferToTensor3D(bufferMap: Map<number, Buffer>): Promise<Map<number, tfnode.Tensor3D>> {
         const result = new Map<number, tfnode.Tensor3D>();
 
         await tfnode.setBackend('tensorflow');
@@ -53,14 +56,12 @@ class MediaPipeService {
         return result;
     }
 
-    private async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
+    async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
         try {
             const result = new Map<
                 number,
                 (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
             >();
-
-            await tfnode.setBackend('wasm');
 
             for (const [key, tensor] of tensorMap) {
                 let dataArr = [];
@@ -83,7 +84,7 @@ class MediaPipeService {
         }
     }
 
-    private dataProcessing(
+    dataProcessing(
         dataMap: Map<
             number,
             (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
@@ -92,6 +93,7 @@ class MediaPipeService {
         const response: IHolistic[] = [];
 
         let i = 0;
+
         dataMap?.forEach((result, key) => {
             response.push({
                 index: key,
