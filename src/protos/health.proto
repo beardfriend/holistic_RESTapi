@@ -1,0 +1,14 @@
+syntax = "proto3"; 
+
+service HealthService {
+	rpc GetHealth(HealthRequest) returns (HealthResponse);
+}
+
+
+message HealthRequest{
+	optional int64 health = 1;
+}
+
+message HealthResponse {
+	 int64 health = 1;
+}

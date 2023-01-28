@@ -1,3 +1,4 @@
+import { HealthRequest, HealthResponse, HealthServiceService } from './protos/health';
 import { sendUnaryData, Server, ServerCredentials, ServerUnaryCall } from '@grpc/grpc-js';
 import { MDPIPE_SERVER_PORT_LIST } from './constants/constant';
 import { HolisticRequest, HolisticResponse, HolisticServiceService } from './protos/holistic';
@@ -19,10 +20,19 @@ const server = new Server({
 const mpSvc = new MediaPipeService();
 
 server.addService(HolisticServiceService, { getHolistics: getHolistics });
+server.addService(HealthServiceService, { getHealth: helathCheck });
 server.bindAsync(`${ipaddr}:${port}`, ServerCredentials.createInsecure(), () => {
     console.log(`Listening on ${ipaddr}:${port}`);
     server.start();
 });
+
+function helathCheck(_call: ServerUnaryCall<HealthRequest, HealthResponse>, send: sendUnaryData<HealthResponse>) {
+    const res: HealthResponse = {
+        health: 1,
+    };
+    console.log('health');
+    send(null, res);
+}
 
 function getHolistics(call: ServerUnaryCall<HolisticRequest, HolisticResponse>, send: sendUnaryData<HolisticResponse>) {
     const ImagesBufferMap = new Map<number, Buffer>();

@@ -18,7 +18,7 @@ class FfmpegStream {
         this.inputPipe.pipe(this.mainHouse.stdin);
     }
 
-    Output(callback: (chunk: Buffer) => Promise<void>): Promise<boolean> {
+    async Output(callback: (chunk: Buffer) => Promise<void>): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.mainHouse.stdout.on('data', async (data: Buffer) => {
                 await callback(data);
