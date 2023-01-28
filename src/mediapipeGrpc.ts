@@ -7,11 +7,11 @@ import MediaPipeService from './services/mediapipe';
 const ipaddr = 'localhost';
 const portList = MDPIPE_SERVER_PORT_LIST;
 
-if (!process.env.SV_NUM) {
-    throw new Error('0~5를 입력하세요');
+if (!process.env.HOLI_COUNT) {
+    throw new Error('0~2를 입력하세요');
 }
 
-const port = portList[Number(process.env.SV_NUM)];
+const port = portList[Number(process.env.HOLI_COUNT)];
 
 const server = new Server({
     'grpc.max_send_message_length': 1000000000000,

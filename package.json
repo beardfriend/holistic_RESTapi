@@ -6,8 +6,10 @@
     "scripts": {
         "build": "tsc -p ./tsconfig.buid.json",
         "dev": "ts-node-dev src/app.ts",
-        "run": "pm2-runtime start dist/app.js",
-        "run:holistic1": "cross-env SV_NUM=0 pm2-runtime start dist/app.js"
+        "local:main": "node dist/app.js",
+        "local:holi": "node dist/mediapipeGrpc.js",
+        "prod:main": "pm2-runtime start dist/app.js",
+        "prod:holi": "pm2-runtime start dist/mediapipeGrpc.js"
     },
     "license": "ISC",
     "devDependencies": {
