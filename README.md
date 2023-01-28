@@ -1,17 +1,18 @@
 # Holistic API Server
 
-<div style="display:flex; gap:5px; width:100%;">
-<img src="https://img.shields.io/badge/node.js-black?style=flat&logo=Node.js&logoColor=#339933" style="width:45px;"/>
-<img src="https://img.shields.io/badge/tfjs-white?style=flat&logo=TensorFlow&logoColor=#FF6F00" style="width:45px;"/>
-	<img src="https://img.shields.io/badge/gRPC-black?style=flat" style="width:45px;"/>
+<div style="display:flex;width:100%;">
+<img src="https://img.shields.io/badge/node-white?style=flat&logo=Node.js&logoColor=#339933"/>
+<img src="https://img.shields.io/badge/tfjs-white?style=flat&logo=TensorFlow&logoColor=#FF6F00"/>
+<img src="https://img.shields.io/badge/gRPC-white?style=flat">
 </div>
 
 <br/>
 이미지 or 비디오를 입력받아 홀리스틱 모델의 데이터를 제공하는 API
 
+<br/>
+<br/>
 
-
-## "홀리스틱" 이란 무엇인가요?
+## "홀리스틱" 이란?
 
 라이브 스트리밍 맞춤형 머신러닝 솔루션을 MediaPipe에서 제공합니다.  
 Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.  
@@ -19,11 +20,9 @@ Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.
 [자세히보기](https://google.github.io/mediapipe/solutions/holistic.html)
 
 
-
 ## 구조
 
-![diagram](https://user-images.githubusercontent.com/97140962/215166495-79cec676-37ac-4e9e-81f6-4135e1000ec5.jpg)
-
+![diagram](https://user-images.githubusercontent.com/97140962/215270620-aae3ba8d-61d6-4b11-aeb8-3a9a43c041b3.png)
 
 
 ## 구현
@@ -32,22 +31,54 @@ Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.
 -   텐서플로우.js(Hands,Pose,Face) API를 추상화하여 홀리스틱 API 제작.
 -   속도 개선을 위해 holistic 데이터 송수신 서버 병렬처리, 노드간 통신에 gRPC 사용.
 
-# 사용하기
+<br/>
 
-## 환경 구축
+# 사용법
+🙏
 
-## 빌드
+## 프로덕션
 
-## 배포
+API 주소 : 
 
-# 결과물
 
-## API 문서
+API 문서 : 
 
-## 동작영상
+
+## 로컬
+
+필수 환경
+
+- node.js ^v18.13.0
+- ffmpeg
+- yarn
+
+
+```bash
+#빌드
+yarn build
+
+# gRPC서버 
+HOLI_COUNT=0 yarn local:holi
+HOLI_COUNT=1 yarn local:holi
+HOLI_COUNT=2 yarn local:holi
+
+# http 서버
+yarn local:main
+
+```
+
+
+
+
+### 테스트 영상
 
 https://user-images.githubusercontent.com/97140962/215148063-a7406d37-ea21-4ae6-936a-4e48e0aea432.mp4
 
+
+
+
+
 # 기타
 
-## 개발하며 고민했던 내용
+## 고민
+
