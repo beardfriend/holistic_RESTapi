@@ -1,13 +1,13 @@
-import { Pose, Face, Hands, Result } from '../modules/mediapipe/index';
+import { Face, Hands, Pose, Result } from '../modules/mediapipe/index';
 import IHolistic from '../transport/response';
 
 import * as tfnode from '@tensorflow/tfjs-node';
 
 import '@mediapipe/face_mesh';
-import '@tensorflow/tfjs-backend-wasm';
-import * as poseDetection from '@tensorflow-models/pose-detection';
-import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
+import * as poseDetection from '@tensorflow-models/pose-detection';
+import '@tensorflow/tfjs-backend-wasm';
 
 class MediaPipeService {
     modules: [Pose, Face, Hands];
@@ -37,11 +37,8 @@ class MediaPipeService {
             throw new Error(err);
         }
     }
-    async setBackend(text: string) {
-        return tfnode.setBackend(text);
-    }
 
-    async bufferToTensor3D(bufferMap: Map<number, Buffer>): Promise<Map<number, tfnode.Tensor3D>> {
+    private async bufferToTensor3D(bufferMap: Map<number, Buffer>): Promise<Map<number, tfnode.Tensor3D>> {
         const result = new Map<number, tfnode.Tensor3D>();
 
         await tfnode.setBackend('tensorflow');
@@ -56,12 +53,14 @@ class MediaPipeService {
         return result;
     }
 
-    async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
+    private async getHolisticData(tensorMap: Map<number, tfnode.Tensor3D>) {
         try {
             const result = new Map<
                 number,
                 (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]
             >();
+
+            await tfnode.setBackend('wasm');
 
             for (const [key, tensor] of tensorMap) {
                 let dataArr = [];
@@ -84,7 +83,7 @@ class MediaPipeService {
         }
     }
 
-    dataProcessing(
+    private dataProcessing(
         dataMap: Map<
             number,
             (Result<poseDetection.Pose> | Result<faceLandmarksDetection.Face> | Result<handsPoseDetection.Hand>)[]

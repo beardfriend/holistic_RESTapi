@@ -1,14 +1,16 @@
-import { credentials } from '@grpc/grpc-js';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import multer from 'multer';
+import { credentials } from '@grpc/grpc-js';
 import { MDPIPE_SERVER_PORT_LIST } from './constants/constant';
-import BrowserEnv from './modules/browser/browserEnv';
-import grpcHolistic from './modules/grpc/holistic';
 import { HealthServiceClient } from './protos/health';
-import { HolisticResponse } from './protos/holistic';
+import BrowserEnv from './modules/browser/browserEnv';
+import { specs, swaggerUi } from './modules/swagger/swagger';
+import grpcHolistic from './modules/grpc/holistic';
 import gRPCService from './services/grpc';
+import MediapipeHandler from './handlers/mediapipe';
+import { errorHandler } from './handlers/middleware';
 
-async function main() {
+function main() {
     // express
     const app = express();
     const upload = multer();
@@ -31,45 +33,19 @@ async function main() {
     gRPCSvc.gRPCHealthCheck();
 
     //handler
-    app.get('/mediapipe/holistic', upload.single('file'), async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const file = req.file;
+    const mediapipeHandler = new MediapipeHandler(gRPCSvc);
 
-            if (!file) {
-                return res.status(400).send({ message: '파일 에러', result: [] });
-            }
+    const mediapipeRouter = express.Router();
 
-            if (file.size > 2000000) {
-                return res.status(400).send({ message: '파일 용량이 너무 큽니다.', result: [] });
-            }
+    mediapipeRouter.get(
+        '/mediapipe/holistic',
+        upload.single('file'),
+        mediapipeHandler.getHolistic.bind(mediapipeHandler)
+    );
+    app.use('/api', mediapipeRouter);
+    app.use('/swagger', swaggerUi.serve, swaggerUi.setup(specs));
 
-            const isVideo = file.mimetype.includes('video');
-            const isImage = file.mimetype.includes('image');
-
-            if (!isVideo && !isImage) {
-                return res.status(400).send({ message: '파일 형식을 확인해주세요', result: [] });
-            }
-
-            let response: HolisticResponse[] = [];
-
-            if (isVideo) {
-                const result = await gRPCSvc.getHolisticFromVideo(file.buffer);
-                response = result;
-            } else {
-                const result = await gRPCSvc.getHolisticFromImage(file.buffer);
-                response.push(result);
-            }
-
-            res.send({ message: '', result: response });
-        } catch (err) {
-            console.error(err);
-            next(err);
-        }
-    });
-
-    app.use((_err: Error, _req: Request, res: Response, _next: NextFunction) => {
-        res.status(500).send({ message: '일시적인 에러가 발생했습니다' });
-    });
+    app.use(errorHandler);
 
     app.listen(4000);
     console.log(`listening on 4000`);
