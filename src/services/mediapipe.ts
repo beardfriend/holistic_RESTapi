@@ -1,13 +1,13 @@
-import { Pose, Face, Hands, Result } from '../modules/mediapipe/index';
+import { Face, Hands, Pose, Result } from '../modules/mediapipe/index';
 import IHolistic from '../transport/response';
 
 import * as tfnode from '@tensorflow/tfjs-node';
 
 import '@mediapipe/face_mesh';
-import '@tensorflow/tfjs-backend-wasm';
-import * as poseDetection from '@tensorflow-models/pose-detection';
-import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import * as handsPoseDetection from '@tensorflow-models/hand-pose-detection';
+import * as poseDetection from '@tensorflow-models/pose-detection';
+import '@tensorflow/tfjs-backend-wasm';
 
 class MediaPipeService {
     modules: [Pose, Face, Hands];
@@ -45,7 +45,7 @@ class MediaPipeService {
 
         await Promise.all(
             Array.from(bufferMap).map(async ([key, buf]) => {
-                const tensor = (await tfnode.node.decodeImage(buf)) as tfnode.Tensor3D;
+                const tensor = await tfnode.node.decodeJpeg(buf);
                 result.set(key, tensor);
             })
         );
@@ -92,6 +92,7 @@ class MediaPipeService {
         const response: IHolistic[] = [];
 
         let i = 0;
+
         dataMap?.forEach((result, key) => {
             response.push({
                 index: key,

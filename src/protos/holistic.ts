@@ -40,8 +40,8 @@ export interface HolisticDetail {
 export interface Vector {
   x: number;
   y: number;
-  z?: number | undefined;
-  visibility?: number | undefined;
+  z: number;
+  visibility: number;
 }
 
 function createBaseHolisticRequest(): HolisticRequest {
@@ -330,7 +330,7 @@ export const HolisticDetail = {
 };
 
 function createBaseVector(): Vector {
-  return { x: 0, y: 0, z: undefined, visibility: undefined };
+  return { x: 0, y: 0, z: 0, visibility: 0 };
 }
 
 export const Vector = {
@@ -341,10 +341,10 @@ export const Vector = {
     if (message.y !== 0) {
       writer.uint32(21).float(message.y);
     }
-    if (message.z !== undefined) {
+    if (message.z !== 0) {
       writer.uint32(29).float(message.z);
     }
-    if (message.visibility !== undefined) {
+    if (message.visibility !== 0) {
       writer.uint32(37).float(message.visibility);
     }
     return writer;
@@ -381,8 +381,8 @@ export const Vector = {
     return {
       x: isSet(object.x) ? Number(object.x) : 0,
       y: isSet(object.y) ? Number(object.y) : 0,
-      z: isSet(object.z) ? Number(object.z) : undefined,
-      visibility: isSet(object.visibility) ? Number(object.visibility) : undefined,
+      z: isSet(object.z) ? Number(object.z) : 0,
+      visibility: isSet(object.visibility) ? Number(object.visibility) : 0,
     };
   },
 
@@ -403,8 +403,8 @@ export const Vector = {
     const message = createBaseVector();
     message.x = object.x ?? 0;
     message.y = object.y ?? 0;
-    message.z = object.z ?? undefined;
-    message.visibility = object.visibility ?? undefined;
+    message.z = object.z ?? 0;
+    message.visibility = object.visibility ?? 0;
     return message;
   },
 };

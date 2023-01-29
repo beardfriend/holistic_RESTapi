@@ -29,6 +29,6 @@ message HolisticDetail {
 message Vector {
 	float x = 1;
 	float y = 2;
-	optional	float z = 3;
-	optional float visibility = 4;
+	float z = 3;
+	float visibility = 4;
 }

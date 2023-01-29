@@ -1,7 +1,7 @@
-import { HealthRequest, HealthResponse, HealthServiceService } from './protos/health';
 import { sendUnaryData, Server, ServerCredentials, ServerUnaryCall } from '@grpc/grpc-js';
 import { MDPIPE_SERVER_PORT_LIST } from './constants/constant';
-import { HolisticRequest, HolisticResponse, HolisticServiceService } from './protos/holistic';
+import { HealthRequest, HealthResponse, HealthServiceService } from './protos/health';
+import { HolisticRequest, HolisticResponse, HolisticServiceService, HolisticDetail } from './protos/holistic';
 import MediaPipeService from './services/mediapipe';
 
 const ipaddr = 'localhost';
@@ -40,12 +40,12 @@ function getHolistics(call: ServerUnaryCall<HolisticRequest, HolisticResponse>, 
     call.request.request.forEach((d) => {
         ImagesBufferMap.set(d.index, Buffer.from(d.data, 'base64'));
     });
-
+    console.log(ImagesBufferMap);
     const response: HolisticResponse = {
         result: [],
     };
     mpSvc.getHolistics(ImagesBufferMap).then((v) => {
-        response.result = v;
+        response.result = v as HolisticDetail[];
         send(null, response);
     });
 }
