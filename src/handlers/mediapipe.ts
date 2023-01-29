@@ -11,7 +11,7 @@ export default class MediapipeHandler {
      * @openapi
      * tags:
      *   name: Mediapipe
-     *   description: 미디어 파이프에서 제공하는 모델에 맞게 데이터를 가공하는 도메인
+     *   description: 미디어 파이프에서 제공하는 모델에 맞게 데이터를 가져오는 도메인
      */
     constructor(gpc: gRPCService) {
         this.grpcModule = gpc;
@@ -21,21 +21,22 @@ export default class MediapipeHandler {
      * @openapi
      * paths:
      *   /api/mediapipe/holistic:
-     *     get:
-     *       summary: "홀리스틱 모델에 맞게 가공하는 도메인"
-     *       description: "얼굴, 포즈, 동작을 감지하여 이미지의 위치 좌표를 제공"
+     *     post:
+     *       summary: "홀리스틱 모델의 데이터를 가져오는 API"
+     *       description: "얼굴, 포즈, 동작을 감지하여 이미지의 위치 좌표를 제공 (Swagger Try it out을 정상적으로 사용하기 위해 메서드 POST 사용)"
      *       tags: [Mediapipe]
      *       requestBody:
-     *         description: 이미지 or 비디오 (2MB이하)
-     *         required: true
+     *         description: 이미지(jpg) or 비디오(mp4) (2MB이하)
      *         content:
      *           multipart/form-data:
      *             schema:
      *               type: object
+     *               required:
+     *                 - file
      *               properties:
      *                 file:
      *                   type: string
-     *                   format: binary
+     *                   format: base64
      *             encoding:
      *               file:
      *                 contentType: image/png, image/jpeg
@@ -44,38 +45,41 @@ export default class MediapipeHandler {
      *          content:
      *            application/json:
      *              schema:
-     *                $ref: '#/components/responses/NotFound'
+     *                $ref: '#/components/schemas/Common'
      *              examples:
-     *                RequiredFile:
+     *                FileRequired:
      *                  value:
      *                    code: 5000
      *                    message: 파일을 입력해주세요
      *                    result: []
      *
-     *                SmallerFile:
+     *                FileMaximum:
      *                  value:
      *                    code: 5001
-     *                    message: 파일 용량이 너무 큽니다
+     *                    message: 파일 용량을 확인해주세요
      *                    result: []
      *                FileType:
      *                  value:
      *                    code: 5002
-     *                    message: 파일 형식을 확인해주세요
+     *                    message: 파일 타입을 확인해주세요
+     *                    result: []
+     *                FileExtension:
+     *                  value:
+     *                    code: 5003
+     *                    message: 파일 확장자를 확인해주세요
      *                    result: []
      *        '200':
      *          content:
      *            application/json:
      *              schema:
-     *                $ref: '#/components/responses/OK'
+     *                $ref: '#/components/schemas/Holistics'
      *              examples:
-     *                jsonObject:
-     *                  summary: A sample object
-     *                  externalValue: 'https://gglabs.s3.ap-northeast-2.amazonaws.com/examples/holistics_sample.json'
+     *                OK:
+     *                  $ref: '#/components/examples/Holistics'
      *
      *
      */
     async getHolistic(req: Request, res: Response, next: NextFunction) {
-        console.log(req.headers, req);
         try {
             const file = req.file;
 
@@ -84,25 +88,30 @@ export default class MediapipeHandler {
             }
 
             if (file.size > 2000000) {
-                return res.status(400).send({ code: 5001, message: '파일 용량이 너무 큽니다', result: [] });
+                return res.status(400).send({ code: 5001, message: '파일 용량을 확인해주세요', result: [] });
+            }
+            const splited = file.mimetype.split('/');
+            const fileType = splited[0];
+            const extension = splited[1];
+
+            if (fileType !== 'image' && fileType !== 'video') {
+                return res.status(400).send({ code: 5002, message: '파일 타입을 확인해주세요', result: [] });
             }
 
-            const isVideo = file.mimetype.includes('video');
-            const isImage = file.mimetype.includes('image');
-
-            if (!isVideo && !isImage) {
-                return res.status(400).send({ code: 5002, message: '파일 형식을 확인해주세요', result: [] });
+            if (extension !== 'jpg' && extension !== 'jpeg') {
+                return res.status(400).send({ code: 5003, message: '파일 확장자를 확인해주세요', result: [] });
             }
 
             let response: HolisticResponse = { result: [] };
 
-            if (isVideo) {
+            if (fileType === 'video') {
                 const result = await this.grpcModule.getHolisticFromVideo(file.buffer);
                 console.log(result);
                 result.forEach((d) => {
                     response.result = [...response?.result, ...d?.result];
                 });
-            } else {
+            }
+            if (fileType === 'image') {
                 const result = await this.grpcModule.getHolisticFromImage(file.buffer);
                 response.result = result.result;
             }

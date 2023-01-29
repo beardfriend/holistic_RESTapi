@@ -1,4 +1,5 @@
-import { getNumGroupsEqaulQuantity, getNumGroupsEqaulQuantityByStartNum } from './calculate';
+import { getNumGroupsEqaulQuantity, getNumGroupsEqaulQuantityByStartNum, isPNG } from './calculate';
+import fs from 'fs';
 
 describe('calculate', () => {
     test('getNumGroupsEqaulQuantity', () => {
@@ -17,5 +18,17 @@ describe('calculate', () => {
     test('getNumGroupsEqaulQuantity2', () => {
         const num = getNumGroupsEqaulQuantityByStartNum(26, 50, 3);
         console.log(num);
+    });
+});
+
+describe('pngCheck', () => {
+    test('PNG파일', () => {
+        const pngBuf = fs.readFileSync('./__test__/datas/mem.png');
+        expect(isPNG(pngBuf)).toBe(true);
+    });
+
+    test('JPEG파일', () => {
+        const pngBuf = fs.readFileSync('./__test__/datas/ss.jpeg');
+        expect(isPNG(pngBuf)).toBe(false);
     });
 });

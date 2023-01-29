@@ -1,3 +1,20 @@
+export function isPNG(buf: Buffer): boolean {
+    if (
+        buf.length > 8 &&
+        buf[0] === 137 &&
+        buf[1] === 80 &&
+        buf[2] === 78 &&
+        buf[3] === 71 &&
+        buf[4] === 13 &&
+        buf[5] === 10 &&
+        buf[6] === 26 &&
+        buf[7] === 10
+    ) {
+        return true;
+    }
+    return false;
+}
+
 // 1 ~ total 숫자를 groupCount개수만큼 그룹을 나눔
 export function getNumGroupsEqaulQuantity(total: number, groupCount: number): number[][] {
     const result = [];

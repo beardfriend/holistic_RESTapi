@@ -55,15 +55,12 @@ export default interface IHolistic {
  *         x:
  *           type: float
  *           description: x좌표
- *           example: 482.8695983886719
  *         y:
  *           type: float
  *           description: y좌표
- *           example: 957.4305419921875
  *         z:
  *           type: float
  *           description: z좌표 이미지로부터 얼마나 근접해있는지
- *           example: -99.78341674804688
  *       required:
  *         - x
  *         - y

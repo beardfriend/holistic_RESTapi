@@ -37,7 +37,7 @@ function main() {
 
     const mediapipeRouter = express.Router();
 
-    mediapipeRouter.get(
+    mediapipeRouter.post(
         '/mediapipe/holistic',
         upload.single('file'),
         mediapipeHandler.getHolistic.bind(mediapipeHandler)

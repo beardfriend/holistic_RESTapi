@@ -33,8 +33,6 @@ import swaggereJsdoc from 'swagger-jsdoc';
  *           type: string
  *         message:
  *           type: string
- *         result:
- *           type: array
  *       required:
  *         - code
  *         - message
@@ -57,7 +55,12 @@ const options = {
             },
         ],
     },
-    apis: ['./src/handlers/**/*.ts', './src/modules/**/*.ts', './src/transport/**/*.ts'], //Swagger 파일 연동
+    apis: [
+        './src/handlers/**/*.ts',
+        './src/modules/**/*.ts',
+        './src/transport/**/*.ts',
+        './__test__/examples/holistic.js',
+    ], //Swagger 파일 연동
 };
 const specs = swaggereJsdoc(options);
 
