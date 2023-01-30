@@ -30,7 +30,11 @@ function main() {
 
     // holistic Service
     const gRPCSvc = new gRPCService(healthClients, holisticClient);
-    gRPCSvc.gRPCHealthCheck();
+    try {
+        gRPCSvc.gRPCHealthCheck();
+    } catch (err) {
+        process.exit(-1);
+    }
 
     //handler
     const mediapipeHandler = new MediapipeHandler(gRPCSvc);

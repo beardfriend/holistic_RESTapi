@@ -98,7 +98,7 @@ export default class MediapipeHandler {
                 return res.status(400).send({ code: 5002, message: '파일 타입을 확인해주세요', result: [] });
             }
 
-            if (extension !== 'jpg' && extension !== 'jpeg') {
+            if (fileType === 'image' && extension !== 'jpg' && extension !== 'jpeg') {
                 return res.status(400).send({ code: 5003, message: '파일 확장자를 확인해주세요', result: [] });
             }
 
@@ -106,7 +106,7 @@ export default class MediapipeHandler {
 
             if (fileType === 'video') {
                 const result = await this.grpcModule.getHolisticFromVideo(file.buffer);
-                console.log(result);
+
                 result.forEach((d) => {
                     response.result = [...response?.result, ...d?.result];
                 });

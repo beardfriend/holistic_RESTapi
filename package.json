@@ -54,6 +54,7 @@
         "jsdom": "^21.1.0",
         "multer": "^1.4.5-lts.1",
         "nodemon": "^2.0.20",
+        "pm2": "^5.2.2",
         "streamifier": "^0.1.1",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^4.6.0",

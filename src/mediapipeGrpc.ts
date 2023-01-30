@@ -40,12 +40,16 @@ function getHolistics(call: ServerUnaryCall<HolisticRequest, HolisticResponse>, 
     call.request.request.forEach((d) => {
         ImagesBufferMap.set(d.index, Buffer.from(d.data, 'base64'));
     });
-    console.log(ImagesBufferMap);
+
     const response: HolisticResponse = {
         result: [],
     };
     mpSvc.getHolistics(ImagesBufferMap).then((v) => {
-        response.result = v as HolisticDetail[];
-        send(null, response);
+        try {
+            response.result = v as HolisticDetail[];
+            send(null, response);
+        } catch (err) {
+            process.exit(-1);
+        }
     });
 }
