@@ -13,7 +13,7 @@ describe('이미지 자르는 서비스', () => {
         const result = new Map<number, Buffer>();
 
         await fmpg.Output(async (chunk) => {
-            ffmpegSvc.SetJpgBuffer(result, chunk);
+            ffmpegSvc.cutJpegfromBuffer(result, chunk);
         });
 
         // nodejs buffer는 16진수를 담는다.
