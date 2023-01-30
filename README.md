@@ -47,6 +47,8 @@ API 문서 : http://13.125.189.172/swagger
 -   yarn
 
 ```bash
+#설치
+yarn install
 
 #테스트
 yarn test
