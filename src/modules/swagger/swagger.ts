@@ -51,7 +51,7 @@ const options = {
         },
         servers: [
             {
-                url: 'http://13.125.189.172', // 요청 URL
+                url: 'http://localhost:4000', // 요청 URL
             },
         ],
     },
