@@ -65,17 +65,21 @@ export default class gRPCService {
     }
 
     async getHolisticFromImage(file: Buffer): Promise<HolisticResponse> {
-        const holisticRequest: HolisticRequest = { request: [] };
+        try {
+            const holisticRequest: HolisticRequest = { request: [] };
 
-        const randInt = Math.floor(Math.random() * MDPIPE_SERVER_PORT_LIST.length) + 1;
-        holisticRequest.request.push({ index: 1, data: Buffer.from(file.buffer).toString('base64') });
+            const randInt = Math.floor(Math.random() * MDPIPE_SERVER_PORT_LIST.length) + 1;
+            holisticRequest.request.push({ index: 1, data: Buffer.from(file.buffer).toString('base64') });
 
-        const res = this.holisticClient.get(randInt)?.get(holisticRequest);
-        if (!res) {
-            const emptyRes: HolisticResponse = { result: [] };
-            return emptyRes;
+            const res = this.holisticClient.get(randInt)?.get(holisticRequest);
+            if (!res) {
+                const emptyRes: HolisticResponse = { result: [] };
+                return emptyRes;
+            }
+
+            return res;
+        } catch (err: any) {
+            throw new Error(err);
         }
-
-        return res;
     }
 }
