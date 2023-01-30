@@ -10,7 +10,7 @@ import * as poseDetection from '@tensorflow-models/pose-detection';
 import '@tensorflow/tfjs-backend-wasm';
 
 class MediaPipeService {
-    modules: [Pose, Face, Hands];
+    private modules: [Pose, Face, Hands];
 
     constructor() {
         const pose = new Pose();

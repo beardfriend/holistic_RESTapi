@@ -90,6 +90,7 @@ export default class MediapipeHandler {
             if (file.size > 2000000) {
                 return res.status(400).send({ code: 5001, message: '파일 용량을 확인해주세요', result: [] });
             }
+
             const splited = file.mimetype.split('/');
             const fileType = splited[0];
             const extension = splited[1];

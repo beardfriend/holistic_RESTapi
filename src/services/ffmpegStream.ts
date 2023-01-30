@@ -9,7 +9,7 @@ class FFmpegService {
         this.isFirst = true;
     }
 
-    SetJpgBuffer(result: Map<number, Buffer>, chunk: Buffer) {
+    cutJpegfromBuffer(result: Map<number, Buffer>, chunk: Buffer) {
         if (chunk.length > 3 && chunk[0] === 255 && chunk[1] === 216 && chunk[2] === 255 && !this.isFirst) {
             result.set(this.index, this.tmpBuffer);
             this.tmpBuffer = Buffer.from(chunk);

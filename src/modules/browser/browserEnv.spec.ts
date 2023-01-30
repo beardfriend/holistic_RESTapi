@@ -2,7 +2,19 @@ import BrowserEnv from './browserEnv';
 import holi from '@mediapipe/holistic';
 
 describe('browser enviroment on node.js', () => {
-    it('mediapipe can run', () => {
+    it('mediapipe not run', async () => {
+        try {
+            new holi.Holistic({
+                locateFile: (file) => {
+                    return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
+                },
+            });
+        } catch (error) {
+            expect(error).not.toBeNull();
+        }
+    });
+
+    it('mediapipe can run', async () => {
         try {
             const benv = new BrowserEnv();
             benv.init();
@@ -11,7 +23,7 @@ describe('browser enviroment on node.js', () => {
                     return `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`;
                 },
             });
-            console.log(holistic);
+            expect(holistic).not.toBeNull();
         } catch (error) {
             expect(error).toBeNull();
         }

@@ -12,7 +12,6 @@ describe('ffmpeg 모듈', () => {
         fmpg.Input(videoBuffer);
         // 비디오를 이미지로 변환
         await fmpg.Output(async (chunk) => {
-            console.log(chunk);
             empty = Buffer.from([...empty, ...chunk]);
         });
 

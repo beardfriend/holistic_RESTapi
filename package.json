@@ -5,11 +5,11 @@
     "author": "beardfriend",
     "scripts": {
         "build": "tsc -p ./tsconfig.buid.json",
+        "test": "jest --watchAll",
         "dev": "ts-node-dev src/app.ts",
+        "start": "npx pm2 start ecosystem.config.js",
         "local:main": "nodemon dist/app.js",
-        "local:holi": "nodemon dist/mediapipeGrpc.js",
-        "prod:main": "pm2-runtime start dist/app.js",
-        "prod:holi": "pm2-runtime start dist/mediapipeGrpc.js"
+        "local:holi": "nodemon dist/mediapipeGrpc.js"
     },
     "license": "ISC",
     "devDependencies": {

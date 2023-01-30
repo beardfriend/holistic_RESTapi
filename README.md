@@ -19,11 +19,9 @@ Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.
 인체 움직임, 얼굴에서의 변화, 손 동작을 감지합니다.
 [자세히보기](https://google.github.io/mediapipe/solutions/holistic.html)
 
-
 ## 구조
 
 ![diagram](https://user-images.githubusercontent.com/97140962/215270620-aae3ba8d-61d6-4b11-aeb8-3a9a43c041b3.png)
-
 
 ## 구현
 
@@ -34,51 +32,40 @@ Holistic(홀리스틱)은 그들이 제공하는 서비스 중 하나입니다.
 <br/>
 
 # 사용법
+
 🙏
 
 ## 프로덕션
 
-API 주소 : 
-
-
-API 문서 : 
-
+API 문서 : http://13.125.189.172/swagger
 
 ## 로컬
 
 필수 환경
 
-- node.js ^v18.13.0
-- ffmpeg
-- yarn
-
+-   node.js ^v18.13.0
+-   ffmpeg
+-   yarn
 
 ```bash
+
+#테스트
+yarn test
+
 #빌드
 yarn build
 
-# gRPC서버 
-HOLI_COUNT=0 yarn local:holi
-HOLI_COUNT=1 yarn local:holi
-HOLI_COUNT=2 yarn local:holi
+#실행
+yarn start
 
-# http 서버
-yarn local:main
-
+#문서
+http://localhost:4000/swagger
 ```
-
-
-
 
 ### 테스트 영상
 
 https://user-images.githubusercontent.com/97140962/215148063-a7406d37-ea21-4ae6-936a-4e48e0aea432.mp4
 
-
-
-
-
 # 기타
 
 ## 고민
-

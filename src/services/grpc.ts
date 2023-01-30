@@ -10,7 +10,7 @@ export default class gRPCService {
     private ffmpegServiceModule: FFmpegService;
     private holisticClient: Map<number, grpcHolistic>;
     private healthClient: HealthServiceClient[];
-    ImagesBufferMap: Map<number, Buffer>;
+    private frameOrderWithImageBufferMap: Map<number, Buffer>;
 
     constructor(healthClient: HealthServiceClient[], holisticClient: Map<number, grpcHolistic>) {
         this.holisticClient = holisticClient;
@@ -32,32 +32,38 @@ export default class gRPCService {
 
     getHolisticFromVideo(file: Buffer): Promise<HolisticResponse[]> {
         return new Promise((resolve, reject) => {
-            this.ImagesBufferMap = new Map<number, Buffer>();
+            this.frameOrderWithImageBufferMap = new Map<number, Buffer>();
 
+            // ffmpeg 실행
             const streamInOutMoudule = new FfmpegStream(24);
-
             streamInOutMoudule.Input(file);
             this.ffmpegServiceModule.init();
+
+            // ffmpeg에서 나온 결과물 처리
             streamInOutMoudule
                 .Output(async (chunk) => {
-                    this.ffmpegServiceModule.SetJpgBuffer(this.ImagesBufferMap, chunk);
+                    this.ffmpegServiceModule.cutJpegfromBuffer(this.frameOrderWithImageBufferMap, chunk);
                 })
                 .then(() => {
-                    const nums = getNumGroupsEqaulQuantity(this.ImagesBufferMap.size, MDPIPE_SERVER_PORT_LIST.length);
+                    // 병렬처리
+                    const nums = getNumGroupsEqaulQuantity(
+                        this.frameOrderWithImageBufferMap.size,
+                        MDPIPE_SERVER_PORT_LIST.length
+                    );
 
                     const arr = [];
                     for (const [i, client] of this.holisticClient) {
                         const holisticRequest: HolisticRequest = { request: [] };
 
                         for (const j of nums[i - 1]) {
-                            const buf = this.ImagesBufferMap.get(j);
+                            const buf = this.frameOrderWithImageBufferMap.get(j);
                             if (buf) {
                                 holisticRequest.request.push({ index: j, data: Buffer.from(buf).toString('base64') });
                             }
                         }
                         arr.push(client.get(holisticRequest));
                     }
-
+                    // 결과물 다 받으면 리턴
                     resolve(Promise.all(arr));
                 })
                 .catch((err) => reject(err));

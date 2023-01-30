@@ -36,23 +36,24 @@ function helathCheck(_call: ServerUnaryCall<HealthRequest, HealthResponse>, send
 }
 
 function getHolistics(call: ServerUnaryCall<HolisticRequest, HolisticResponse>, send: sendUnaryData<HolisticResponse>) {
-    const ImagesBufferMap = new Map<number, Buffer>();
+    const frameOrderWithImageBufferMap = new Map<number, Buffer>();
 
     call.request.request.forEach((d) => {
-        ImagesBufferMap.set(d.index, Buffer.from(d.data, 'base64'));
+        frameOrderWithImageBufferMap.set(d.index, Buffer.from(d.data, 'base64'));
     });
 
     const response: HolisticResponse = {
         result: [],
     };
-    mpSvc.getHolistics(ImagesBufferMap).then((v) => {
-
+    mpSvc
+        .getHolistics(frameOrderWithImageBufferMap)
+        .then((v) => {
             response.result = v as HolisticDetail[];
             send(null, response);
-
-    }).catch((err)=>{ 
-	
-		send(err, null)
-		process.exit(-1)
-	});
+        })
+        .catch((err) => {
+            console.log(err);
+            send(err, null);
+            process.exit(-1);
+        });
 }
