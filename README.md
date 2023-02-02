@@ -34,9 +34,6 @@ Holistic(홀리스틱)은 MediaPipe에서 제공하는 서비스 중 하나입�
 
 🙏
 
-## 프로덕션
-
-API 문서 : http://13.125.189.172/swagger
 
 ## 로컬
 
