@@ -64,9 +64,3 @@ http://localhost:4000/swagger
 
 https://user-images.githubusercontent.com/97140962/215148063-a7406d37-ea21-4ae6-936a-4e48e0aea432.mp4
 
-# 기타
-
-## 확장
-
-시야를 넓히는 데에 도움을 받은 것 같아  
-감사의 인사를 전합니다.
